@@ -1,0 +1,32 @@
+v1.7 Ticari Lisans Doğrulama ve Güvenlik Mühürleme (Güvenlik + UX İyileştirmeleriyle)
+
+Lütfen mevcut hatasız v1.6.5 sürümünün üzerine şu lisanslama mimarisini hatasız entegre et:
+
+1. Server ID Üretimi:
+   - Sunucunun donanımına özel benzersiz 'Server ID' üreten fonksiyon yaz (CPU ID + Disk Serial + MAC address + hostname kombinasyonu, crypto ile hash'le).
+   - Bu ID'yi Admin panelinde "Sistem/Lisans Bilgileri" sekmesine ekle (kopyalanabilir metin kutusu + QR kod olarak da göster).
+
+2. Lisans Kontrol Mantığı:
+   - SECRET_SALT'ı .env'den çek (process.env.SECRET_SALT = 'Lockcell-2026-X-Ozel-Sifre').
+   - DİKKAT! Lisans anahtarı doğrulama algoritması tam olarak şu şekilde olmalıdır:
+     A. Verileri birleştir: const rawData = `${ServerID}|${ExpiryDate}|${SECRET_SALT}`;
+     B. Hash oluştur: crypto.createHmac('sha256', process.env.SECRET_SALT).update(rawData).digest('hex').toUpperCase();
+     C. Elde edilen hash'in ilk 16 karakterini alıp 4'erli bloklar halinde tire ile ayır (Örn: XXXX-XXXX-XXXX-XXXX) ve kullanıcının girdiği anahtar ile bu değeri karşılaştır.
+   - Anahtar geçerliyse 'system_config' tablosunda 'license_expiry_date' ve 'license_status' ('Active') güncelle.
+   - Offline doğrulama: İnternet yoksa yerel timestamp ile kontrol et (grace period 3 gün).
+
+3. Demo ve Kilit Mekanizması:
+   - İlk kurulumda 'installation_date' kaydet, otomatik 15 günlük Demo başlat.
+   - Demo bitişinde veya lisans süresi dolduğunda: Login sonrası sadece 'Lisans Yenileme' sayfasına yönlendir. Diğer tüm menü/API'leri erişime kapat.
+   - Yenileme sayfasında senin iletişim bilgilerini (Firma Bilgileri: TMT Makine Sa. Ve Tic. Ltd. Şti. / Destek Hattı: +90 541 314 04 75 / Telefon: (0262) 502 4570 /E-posta : destek@tmtmakine.com.tr) + "Lisans Anahtarı Gir" formu göster.
+   - 3 gün grace period: Demo/lisans bitişinde 3 gün daha çalışsın (müşteri anahtar alana kadar).
+
+4. UI Bildirimleri:
+   - Demo süresinde veya lisans bitişine 7 gün kala üst banner: "Demo Sürümü / Lisansınız [X] gün sonra bitiyor. Detay için Lisans Bilgileri."
+   - Lisans giriş denemesi başarısız olursa kırmızı toast + audit log.
+
+5. Güvenlik & Audit:
+   - Lisans kontrolünü her login ve kritik API (üretim sonlandırma, rapor çekme) için backend'de zorunlu kıl.
+   - Tüm lisans giriş denemelerini 'audit_logs' tablosuna kaydet (kim, ne zaman, ServerID, başarı/başarısızlık, IP).
+
+Bittiğinde bana şunu yaz: "v1.7 Ticari Mühür Basıldı. Sistem artık sadece senin üreteceğin anahtarlarla çalışır!"

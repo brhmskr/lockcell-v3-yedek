@@ -1,0 +1,43 @@
+Raporlama ve Canlı İzleme Paneli Talimatı
+"Sisteme iki ana özellik daha eklemeni istiyorum: Detaylı Raporlama ve Canlı Tezgah Durum İzleme.
+
+1. Detaylı Üretim Raporu (Tablo Görünümü):
+Yönetici panelinde 'Raporlar' adında yeni bir sayfa oluştur. Bu tabloda her bir üretim kaydı için şu bilgiler yer almalı:
+
+Tezgah Adı
+
+İş Emri Numarası ve Operasyon (Örn: OP10)
+
+Operatör İsmi
+
+Net Çalışma Süresi (Başlat-Durdur-Devam et arasındaki toplam süre)
+
+Toplam Duruş Süresi (Durdur-Devam et arasındaki toplam süre)
+
+Üretilen Adet
+
+Tarih/Saat Bilgisi
+(Not: Bu tabloyu 'Excel olarak indir' veya 'CSV olarak indir' butonuyla destekle.)
+
+2. Canlı Tezgah Durum Grafiği (Dashboard):
+Ana dashboard ekranına, tüm tezgahların anlık durumunu gösteren görsel bir grafik/panel ekle:
+
+ÇALIŞIYOR (Yeşil): Şu an aktif bir iş emrinde olan tezgahlar.
+
+DURDURULDU (Kırmızı): Operatörün 'Durdur'a bastığı ve bir neden (Arıza, Mola vb.) seçtiği tezgahlar.
+
+BOŞTA (Gri): Hiçbir iş emri atanmamış veya operatörün henüz giriş yapmadığı tezgahlar.
+
+Duruş Analizi Grafiği: Hangi duruş nedeninin (Arıza, Malzeme Bekleme vb.) toplamda ne kadar süre kaybettirdiğini gösteren bir Pasta Grafiği (Pie Chart) ekle.
+
+3. Teknik Gereksinim:
+Zaman hesaplamalarını yaparken production_logs ve downtime_logs tablolarını doğru şekilde ilişkilendir. Grafik kütüphanesi olarak projenin yapısına uygun modern bir kütüphane (Recharts veya Chart.js gibi) kullan."
+
+Bu Özellikler Sana Ne Kazandıracak?
+Personel Performansı: Hangi operatör hangi tezgahta daha verimli çalışıyor, kim daha çok duruş yaşıyor net göreceksin.
+
+Kayıp Zaman Analizi: "Bu ay toplamda 48 saat makine arızası yaşamışız, 20 saat malzeme beklemişiz" gibi verilerle sorunun köküne inebileceksin.
+
+Anlık Müdahale: Dashboard'daki kırmızı (Durduruldu) ışıkları gördüğünde, operatörün yanına gitmeden önce sistemden duruş nedenine bakıp (Örn: Arıza) hemen teknik ekibi yönlendirebileceksin.
+
+Bu talimatı verdiğinde Agent grafik kütüphanelerini yüklemeye başlayacaktır. İşlem bittiğinde Dashboard'da renkli grafiklerini gördün mü?

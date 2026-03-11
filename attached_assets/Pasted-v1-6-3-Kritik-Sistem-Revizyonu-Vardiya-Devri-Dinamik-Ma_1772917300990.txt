@@ -1,0 +1,27 @@
+v1.6.3 Kritik Sistem Revizyonu: Vardiya Devri, Dinamik Maliyet & Adet Kontrolü
+
+Lütfen aşağıdaki üç ana modülü, belirtilen teknik detaylara göre sistemde güncelle:
+
+1. MODÜL: Makine Merkezli Vardiya Devralma (Shift Handover)
+- Çözüm: Operatör bir tezgah seçtiğinde; aktif ('running' veya 'paused') işi sadece 'machine_id' üzerinden sorgula. 'operator_id' filtresini kaldır.
+- Devralma Modalı: Eğer tezgahta aktif bir iş varsa, "Bu işi devralmak istiyor musunuz?" modalını göster.
+- Devral Onayı: Onaylandığında mevcut 'production_logs' kaydındaki 'operator_id' alanını yeni kullanıcı ID'si ile güncelle. İşin 'start_time' değeri DEĞİŞMEMELİDİR.
+- Backend: PATCH /api/logs/takeover endpoint'ini oluştur ve session yönetimini tezgah bazlı (machine-centric) hale getir.
+
+2. MODÜL: Üretim Adet Sınırı ve Doğrulama (Quantity Guard)
+- Mantık: Bir iş emri satırı (work_order_line) için üretilen toplam miktar, o satırın hedef miktarından (quantity) fazla olamaz.
+- Kontrol Noktası: Operatör "BİTİR" (Finish) butonuna basıp miktar girdiğinde; (Daha Önce Üretilen Toplam + Yeni Girilen Miktar) > (Hedef Miktar) ise işlemi durdur.
+- UI: Kullanıcıya "Hata: Toplam üretim miktarı iş emri adedini (X adet) aşamaz!" uyarısını kırmızı bir toast/alert olarak göster.
+- Backend: API tarafında kayıt oluştururken hedef miktar kontrolünü zorunlu kıl (Server-side validation).
+
+3. MODÜL: Dinamik Karlılık & Maliyet Güncelleme (Superadmin)
+- UI: Karlılık sayfasındaki "Malzeme Maliyeti", "Takım Maliyeti" ve "Birim Satış Fiyatı" alanlarını Superadmin için editable (düzenlenebilir) yap.
+- Hesaplama: Değer değiştiğinde 'Net Kar' ve 'Kar Oranı %' alanlarını anlık yeniden hesapla.
+- Audit Log: Tüm maliyet değişikliklerini 'audit_logs' tablosuna 'Reason' (Neden) zorunluluğu ile kaydet.
+
+KONTROL & TEST:
+- Operatör A ile 100 adetlik işi başlat, 60 adet yapıp çık.
+- Operatör B ile gir, işi devral. Kalan 40 yerine "50" adet girmeyi dene. Sistemin hata verip engellediğini doğrula.
+- Superadmin ile maliyetleri güncelle ve karlılık grafiklerini kontrol et.
+
+Bittiğinde şunu yaz: "v1.6.3 aktif. Vardiya devri, adet kontrolü ve dinamik maliyet modülleri başarıyla entegre edildi!"

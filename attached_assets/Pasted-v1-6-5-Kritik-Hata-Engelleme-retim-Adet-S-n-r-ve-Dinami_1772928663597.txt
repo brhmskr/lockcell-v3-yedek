@@ -1,0 +1,32 @@
+v1.6.5 Kritik Hata Engelleme: Üretim Adet Sınırı ve Dinamik UI Uyarıları
+Mevcut Sorun: Operatörler hedef miktarın üzerinde üretim girişi yapabiliyor. Bu durumun hem veritabanı hem de arayüz seviyesinde kesin olarak engellenmesi gerekiyor.
+
+Lütfen şu geliştirmeleri uygula:
+
+1. Frontend (Operatör Paneli) Dinamik Kısıtlama:
+   - DURDUR veya BİTİR adımlarında adet giriş alanı (input) açıldığında:
+     - 'max' değerini otomatik olarak (Hedef Miktar - Toplam Üretilen Miktar) şeklinde hesapla ve ata.
+     - Kullanıcı etkileşimi: Eğer girilen değer 'max' değerinden büyükse;
+       * Giriş kutusunun (input) kenarlıklarını KIRMIZI yap.
+       * Altına "Hata: Maksimum [X] adet daha girebilirsiniz!" uyarısını ekle.
+       * "KAYDET" veya "BİTİR" butonunu PASİF (disabled) hale getir.
+     - Varsayılan değer olarak "Kalan Miktar" otomatik yazılsın (örn. input value = kalan adet).
+     - Edge case: Kalan adet 0 ise input tamamen disabled olsun + mesaj "İş zaten tamamlandı".
+     - Gerçek zamanlı kalan miktar göstergesi ekle (örn. "Kalan: 10 adet" etiketi).
+
+2. Backend (API) Güvenlik Katmanı:
+   - 'PATCH /api/production-logs' ve ilgili üretim kayıt endpoint'lerinde şu doğrulamayı yap:
+     - (Mevcut Onaylı Toplam + Yeni Gelen Adet) > (İş Emri Hedef Adeti) ise işlemi reddet (400 Bad Request) ve "Üretim limiti aşılamaz!" mesajını dön.
+   - Transaction kullan: Adet güncellemesi sırasında race condition önlemek için optimistic locking veya DB transaction ekle.
+   - Aşım denemesi loglansın (audit_logs tablosuna: kim, ne zaman, denenen adet, hata mesajı).
+
+3. Kullanıcı Deneyimi (UX):
+   - Adet giriş alanında gerçek zamanlı kalan miktar göster (örn. "Kalan: 10 adet" canlı güncellensin).
+   - Aşım hatasında sesli uyarı (isteğe bağlı) veya kırmızı toast.
+
+4. Test Senaryosu:
+   - Hedef 50 olan bir işte 40 adet yapılmışsa; operatör 11 yazdığı anda buton kilitlenmeli, kutu kırmızı olmalı, kalan miktar "10 adet" gösterilmeli.
+   - 10 yazarsa her şey normale dönmeli.
+   - Kalan 0 ise input disabled + mesaj.
+
+Bittiğinde şunu yaz: "v1.6.5 Hatasız üretim kontrolü aktif. Hedef aşımı hem görsel hem teknik olarak imkansız hale getirildi!"

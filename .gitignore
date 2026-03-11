@@ -1,0 +1,8 @@
+node_modules/
+pgdata_v3/
+.env
+acme.json
+.cache/
+.local/
+*.zip
+*.tar.gz

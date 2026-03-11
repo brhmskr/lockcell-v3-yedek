@@ -1,0 +1,38 @@
+Sen uzman bir Full-Stack Yazılım Geliştirici ve Sistem Mimarı yapay zeka ajanısın. Benim hiçbir kodlama bilgim yok. Bu yüzden uygulamanın mimarisini, veri tabanını, arayüzünü (UI/UX) ve arka plan (backend) mantığını tamamen senin kurmanı ve yönetmeni istiyorum.
+
+Görevimiz: Modern, tablet/mobil uyumlu ve gerçek zamanlı çalışan bir "Operasyon Bazlı Üretim Takip Sistemi (MES)" geliştirmek. 
+
+Lütfen projeyi tek seferde yazmaya çalışma. Önce veri tabanını kur, sonra operatör panelini yap, en son yönetici panelini yap. Her aşamada bana bilgi vererek ilerle.
+
+Aşağıda sistemin sahip olması gereken tüm kurallar ve özellikler madde madde belirtilmiştir:
+
+### 1. VERİ TABANI VE İLİŞKİLER (Sistemin İskeleti)
+Aşağıdaki tabloları ve birbirleri arasındaki ilişkileri kurmalısın:
+* Kullanıcılar/Personeller: (Yönetici ve Operatör rolleri olmalı).
+* Tezgahlar (Makineler): (Örn: CNC-1, Torna-2. Her tezgahın anlık durumu olmalı: Çalışıyor, Boşta, Arızalı vb.)
+* Operasyonlar (Rotalar): (Örn: OP10 Kesim, OP20 Torna, OP30 Kalite. Her operasyon sadece kendine tanımlı tezgahlarda yapılabilmeli).
+* İş Emirleri: (Üretilecek ürün, hedeflenen miktar ve izleyeceği operasyon rotası).
+* Duruş Nedenleri: (Arıza, Malzeme Bekleme, Mola, Setup/Ayar gibi sabit bir liste).
+* Üretim Logları: (Hangi iş emri, hangi operasyonda, hangi tezgahta, kim tarafından, ne kadar süreyle yapıldı ve kaç adet üretildi).
+
+### 2. OPERATÖR PANELİ VE İŞ AKIŞI (Sahanın Kullanacağı Ekran)
+Bu ekran karmaşadan uzak, büyük butonlu ve endüstriyel tabletlerde kolay kullanılabilir olmalı.
+Süreç şu şekilde işlemeli:
+1.  Operatör sisteme girer, kendi adını, çalışacağı tezgahı ve yapacağı operasyonu (Örn: OP20) seçer.
+2.  Ekranda sadece "BAŞLAT" butonu görünür.
+3.  BAŞLAT: Butona basıldığında zamanlayıcı işlemeye başlar. Tezgahın durumu "Çalışıyor" olur.
+4.  DURDUR: Operatör üretimi durdurmak istediğinde bu butona basar. Basıldığı an ekrana bir açılır pencere (modal) gelir ve "Duruş Nedeni" (Arıza, Mola vb.) seçmesi zorunlu kılınır. Neden seçildikten sonra zamanlayıcı durur, tezgah durumu seçilen nedene göre güncellenir. "Durdur" butonu kaybolur ve yerine "DEVAM ET" butonu gelir.
+5.  DEVAM ET: Operatör tekrar işe koyulacağı zaman bu butona basar. Basıldığı an sistem operatöre "Şu ana kadar kaç adet parça ürettin?" diye sorar. Sayı girildikten sonra zamanlayıcı tekrar işlemeye başlar. Buton tekrar "DURDUR" butonuna dönüşür.
+6.  BİTİR: Operasyon tamamen bittiğinde basılır. Sistem son kez "Kaç adet parça ürettin?" diye sorar, sayıyı kaydeder, operasyonu kapatır ve iş emrini bir sonraki operasyona (Örn: OP30) sevk eder.
+
+### 3. YÖNETİCİ PANELİ (Dashboard)
+Bu ekran yöneticiler için gerçek zamanlı bir kontrol merkezi olmalıdır. Karanlık mod (Dark mode) destekli ve modern grafiklere sahip olmalıdır.
+İçermesi gerekenler:
+* Anlık Tezgah Durumları: Hangi tezgah çalışıyor, hangisi duruyor (duruyorsa nedeni nedir ve ne kadar süredir duruyor) renkli kartlar halinde görünmeli (Çalışıyor: Yeşil, Duruyor: Kırmızı, Boşta: Gri).
+* Operasyon Takibi: Hangi iş emri şu an hangi aşamada (OP10, OP20) yüzde kaç tamamlanmış olarak bekliyor.
+* Üretim Miktarları: Operatörlerin girdiği parça sayılarına göre canlı üretim ilerleme çubukları (progress bar).
+
+### 4. KULLANILACAK TEKNOLOJİLER
+Bu sistemin hızlı ve hatasız çalışması için en uygun modern web teknolojilerini (Örn: React/Next.js, TailwindCSS, Node.js veya Python, veritabanı olarak PostgreSQL veya Supabase/Firebase) sen seç ve kur.
+
+Lütfen ilk adım olarak sistemin veri tabanı şemasını oluştur ve bana "Veri tabanı şemasını kurdum, Operatör panelini tasarlamaya geçeyim mi?" diye sor.
