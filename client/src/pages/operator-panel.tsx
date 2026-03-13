@@ -1066,11 +1066,17 @@ export default function OperatorPanel({ user, onBack, initialMachineId, licenseS
                       </SelectContent>
                     </Select>
                     {availableOperations.length > 0 && !canDoOnCurrentMachine && selectedMachineId && (
-                      <p className="text-sm text-amber-500 flex items-center gap-2" data-testid="warning-machine-mismatch">
-                        <AlertTriangle className="w-4 h-4" />
-                        Bu operasyon seçili tezgahta yapılamaz.
-                        {allowedMachineNames ? ` İzin verilen tezgahlar: ${allowedMachineNames}.` : ""}
-                      </p>
+                      <div className="p-4 bg-destructive/10 border border-destructive/30 rounded-lg space-y-2" data-testid="alert-machine-incompatible">
+                        <p className="text-sm font-semibold text-destructive flex items-center gap-2">
+                          <AlertTriangle className="w-5 h-5 shrink-0" />
+                          Bu operasyon seçili tezgahta yapılamaz. Lütfen yöneticiye başvurun.
+                        </p>
+                        {allowedMachinesForOp && allowedMachinesForOp.length > 0 && (
+                          <p className="text-xs text-muted-foreground ml-7">
+                            İzin verilen tezgahlar: <span className="font-mono font-semibold">{allowedMachinesForOp.map(m => m.code).join(", ")}</span>
+                          </p>
+                        )}
+                      </div>
                     )}
                     {availableOperations.length === 0 && selectedWorkOrderId && (
                       <p className="text-sm text-amber-500 flex items-center gap-2">
