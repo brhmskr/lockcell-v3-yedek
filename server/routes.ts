@@ -4,9 +4,30 @@ import { storage } from "./storage";
 import { pool } from "./db";
 import { z } from "zod";
 import * as XLSX from "xlsx";
+import multer from "multer";
+import path from "path";
+import fs from "fs";
+import express from "express";
 import { verifyPassword, hashPassword, requireAuth, requireAdmin, requireLicense, invalidateLicenseCache } from "./auth";
 import { generateServerId, validateLicenseKey, checkLicenseStatus, setConfigValue, logLicenseAttempt } from "./license";
-import { registerObjectStorageRoutes } from "./replit_integrations/object_storage";
+
+// --- KENDİ SUNUCUMUZA DOSYA YÜKLEME AYARLARI ---
+const uploadDir = path.join(process.cwd(), "uploads", "objects");
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+const storageEngine = multer.diskStorage({
+  destination: function (_req, _file, cb) {
+    cb(null, uploadDir);
+  },
+  filename: function (_req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, uniqueSuffix + '-' + file.originalname);
+  }
+});
+
+const upload = multer({ storage: storageEngine });
 
 const loginSchema = z.object({
   username: z.string().min(1),
@@ -120,7 +141,18 @@ export async function registerRoutes(
   app: Express
 ): Promise<Server> {
 
-  registerObjectStorageRoutes(app);
+  // --- KENDİ SUNUCUMUZA DOSYA YÜKLEME VE OKUMA ROTASI ---
+  // Dışarıdan resimlere erişebilmek için bu klasörü dışa açıyoruz
+  app.use("/objects", express.static(uploadDir));
+
+  app.post("/api/uploads", requireAuth, upload.single("file"), (req, res) => {
+    if (!req.file) {
+      return res.status(400).json({ error: "Dosya yüklenemedi." });
+    }
+    // Veritabanına kaydedilecek URL formatı
+    const fileUrl = `/objects/${req.file.filename}`;
+    res.json({ url: fileUrl });
+  });
 
   // ==================== AUTH ====================
   app.post("/api/auth/login", async (req, res) => {

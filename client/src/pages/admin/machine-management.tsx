@@ -65,6 +65,7 @@ export default function MachineManagement() {
     );
   };
 
+  // --- İŞTE YENİ YERLİ MİLLİ DOSYA YÜKLEME KODUMUZ ---
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -73,18 +74,22 @@ export default function MachineManagement() {
       return;
     }
     setIsUploading(true);
+
+    const formData = new FormData();
+    formData.append("file", file);
+
     try {
-      const urlRes = await fetch("/api/uploads/request-url", {
+      const uploadRes = await fetch("/api/uploads", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ name: file.name, size: file.size, contentType: file.type }),
+        body: formData,
       });
-      if (!urlRes.ok) throw new Error("Yükleme URL'si alınamadı.");
-      const { uploadURL, objectPath } = await urlRes.json();
-      const putRes = await fetch(uploadURL, { method: "PUT", body: file, headers: { "Content-Type": file.type } });
-      if (!putRes.ok) throw new Error("Dosya yüklenemedi.");
-      setFormImageUrl(objectPath);
+
+      if (!uploadRes.ok) {
+        throw new Error("Dosya yüklenemedi.");
+      }
+
+      const data = await uploadRes.json();
+      setFormImageUrl(data.url);
       toast({ title: "Resim yüklendi" });
     } catch (err: any) {
       toast({ title: "Hata", description: err.message || "Resim yüklenirken sorun oluştu.", variant: "destructive" });
