@@ -36,6 +36,7 @@ function TechnicalDrawingSection({ workOrderId }: { workOrderId: number }) {
   const currentDrawing = drawings.find(d => d.isCurrent);
   const oldRevisions = drawings.filter(d => !d.isCurrent);
 
+  // --- İŞTE YENİ YERLİ MİLLİ DOSYA YÜKLEME KODUMUZ ---
   const handleDrawingUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -51,18 +52,34 @@ function TechnicalDrawingSection({ workOrderId }: { workOrderId: number }) {
       if (drawingFileRef.current) drawingFileRef.current.value = "";
       return;
     }
+
     setUploading(true);
+    const formData = new FormData();
+    formData.append("file", file);
+
     try {
-      const res = await apiRequest("POST", "/api/uploads/request-url", { name: file.name, size: file.size, contentType: file.type });
-      const { uploadURL, objectPath } = await res.json();
-      await fetch(uploadURL, { method: "PUT", headers: { "Content-Type": file.type }, body: file });
-      const fileUrl = objectPath.startsWith("/objects/") ? objectPath : `/objects/${objectPath}`;
-      await apiRequest("POST", `/api/technical-drawings/${workOrderId}`, { fileName: file.name, fileUrl, revisionNote: revisionNote || null });
+      const uploadRes = await fetch("/api/uploads", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!uploadRes.ok) {
+        throw new Error("Dosya yüklenemedi.");
+      }
+
+      const data = await uploadRes.json();
+
+      await apiRequest("POST", `/api/technical-drawings/${workOrderId}`, { 
+        fileName: file.name, 
+        fileUrl: data.url, 
+        revisionNote: revisionNote || null 
+      });
+
       setRevisionNote("");
       queryClient.invalidateQueries({ queryKey: ["/api/technical-drawings", workOrderId] });
       toast({ title: currentDrawing ? "Yeni revizyon yüklendi" : "Teknik resim yüklendi" });
-    } catch {
-      toast({ title: "Dosya yüklenemedi", variant: "destructive" });
+    } catch (err: any) {
+      toast({ title: "Dosya yüklenemedi", description: err.message, variant: "destructive" });
     } finally {
       setUploading(false);
       if (drawingFileRef.current) drawingFileRef.current.value = "";
