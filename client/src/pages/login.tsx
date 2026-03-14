@@ -22,7 +22,7 @@ import {
   Settings2,
 } from "lucide-react";
 
-// Dashboard'da çalışan orijinal yolları tekrar aktif ediyoruz
+// Dashboard sayfasında çalışan orijinal yollar (Alias @assets)
 import lockcellLogoWhite from "@assets/lockcell-beyaz_1772012570656.webp";
 import lockcellLogoDark from "@assets/lockcell_logo_1772012546609.webp";
 
@@ -110,22 +110,19 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-md space-y-8">
         <div className="text-center space-y-3">
-          <div className="flex flex-col items-center justify-center mb-6">
-            {/* GARANTİ YÖNTEM: 
-              Tarayıcıda temanın ne olduğunu anlamak için 'dark' sınıfını kontrol eden 
-              ve CSS yerine manuel gösterim yapan yapıya geçtik.
-            */}
+          <div className="flex items-center justify-center mb-6">
+            {/* LOGO DÜZELTMESİ: Dashboard ile aynı yapıya getirildi */}
             <img
               src={lockcellLogoDark}
-              alt="Lockcell Logo"
-              className="h-16 w-auto object-contain block dark:hidden"
-              style={{ minHeight: '64px' }}
+              alt="Lockcell"
+              className="h-14 object-contain dark:hidden"
+              data-testid="img-logo-light"
             />
             <img
               src={lockcellLogoWhite}
-              alt="Lockcell Logo"
-              className="h-16 w-auto object-contain hidden dark:block"
-              style={{ minHeight: '64px' }}
+              alt="Lockcell"
+              className="h-14 object-contain hidden dark:block"
+              data-testid="img-logo-dark"
             />
           </div>
           <h1
@@ -148,6 +145,7 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
                 : "bg-muted/30 text-muted-foreground hover:bg-muted/50"
             }`}
             onClick={() => setMode("operator")}
+            data-testid="tab-operator"
           >
             <Wrench className="w-4 h-4" />
             Operatör Girişi
@@ -160,15 +158,15 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
                 : "bg-muted/30 text-muted-foreground hover:bg-muted/50"
             }`}
             onClick={() => setMode("admin")}
+            data-testid="tab-admin"
           >
             <Shield className="w-4 h-4" />
             Yönetici Girişi
           </button>
         </div>
 
-        {/* Form alanları değişmedi, aynen devam ediyor... */}
         {mode === "operator" && (
-          <Card className="border-border/50 shadow-lg">
+          <Card className="border-border/50">
             <CardContent className="p-6">
               <form onSubmit={handleOperatorLogin} className="space-y-5">
                 <div className="space-y-2">
@@ -180,15 +178,24 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
                     value={selectedMachineId}
                     onValueChange={setSelectedMachineId}
                   >
-                    <SelectTrigger className="h-14 text-base">
+                    <SelectTrigger
+                      className="h-14 text-base"
+                      data-testid="select-machine"
+                    >
                       <SelectValue placeholder="Tezgah seçiniz..." />
                     </SelectTrigger>
                     <SelectContent>
                       {machines?.map((m) => (
-                        <SelectItem key={m.id} value={String(m.id)}>
+                        <SelectItem
+                          key={m.id}
+                          value={String(m.id)}
+                          data-testid={`option-machine-${m.id}`}
+                        >
                           <div className="flex items-center gap-2 py-1">
                             <Settings2 className="w-4 h-4 text-chart-1" />
-                            <span className="font-mono font-bold text-sm">{m.code}</span>
+                            <span className="font-mono font-bold text-sm">
+                              {m.code}
+                            </span>
                             <span className="text-muted-foreground">|</span>
                             <span className="text-base">{m.name}</span>
                           </div>
@@ -207,12 +214,19 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
                     value={selectedUserId}
                     onValueChange={setSelectedUserId}
                   >
-                    <SelectTrigger className="h-14 text-base">
+                    <SelectTrigger
+                      className="h-14 text-base"
+                      data-testid="select-operator"
+                    >
                       <SelectValue placeholder="Operatör seçiniz..." />
                     </SelectTrigger>
                     <SelectContent>
                       {operators?.map((op) => (
-                        <SelectItem key={op.id} value={String(op.id)}>
+                        <SelectItem
+                          key={op.id}
+                          value={String(op.id)}
+                          data-testid={`option-operator-${op.id}`}
+                        >
                           <div className="flex items-center gap-2 py-1">
                             <Wrench className="w-4 h-4 text-chart-2" />
                             <span className="text-base">{op.fullName}</span>
@@ -236,15 +250,29 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
                     onChange={(e) => setPin(e.target.value)}
                     placeholder="PIN kodunuzu giriniz..."
                     className="h-14 text-xl text-center font-mono tracking-[0.5em]"
+                    data-testid="input-pin"
                   />
                 </div>
 
                 <Button
                   type="submit"
                   className="w-full h-14 text-lg font-bold"
-                  disabled={!selectedMachineId || !selectedUserId || !pin || operatorLoginMutation.isPending}
+                  disabled={
+                    !selectedMachineId ||
+                    !selectedUserId ||
+                    !pin ||
+                    operatorLoginMutation.isPending
+                  }
+                  data-testid="button-operator-login"
                 >
-                  {operatorLoginMutation.isPending ? "Giriş yapılıyor..." : "Giriş Yap"}
+                  {operatorLoginMutation.isPending ? (
+                    "Giriş yapılıyor..."
+                  ) : (
+                    <>
+                      <LogIn className="w-5 h-5 mr-2" />
+                      Giriş Yap
+                    </>
+                  )}
                 </Button>
               </form>
             </CardContent>
@@ -252,7 +280,7 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
         )}
 
         {mode === "admin" && (
-          <Card className="border-border/50 shadow-lg">
+          <Card className="border-border/50">
             <CardContent className="p-6">
               <form onSubmit={handleAdminLogin} className="space-y-5">
                 <div className="space-y-2">
@@ -267,6 +295,7 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
                     placeholder="Kullanıcı adınızı giriniz..."
                     className="h-14 text-base"
                     autoComplete="username"
+                    data-testid="input-username"
                   />
                 </div>
 
@@ -282,15 +311,26 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
                     placeholder="Şifrenizi giriniz..."
                     className="h-14 text-base"
                     autoComplete="current-password"
+                    data-testid="input-password"
                   />
                 </div>
 
                 <Button
                   type="submit"
                   className="w-full h-14 text-lg font-bold"
-                  disabled={!username || !password || adminLoginMutation.isPending}
+                  disabled={
+                    !username || !password || adminLoginMutation.isPending
+                  }
+                  data-testid="button-admin-login"
                 >
-                  {adminLoginMutation.isPending ? "Giriş yapılıyor..." : "Yönetici Girişi"}
+                  {adminLoginMutation.isPending ? (
+                    "Giriş yapılıyor..."
+                  ) : (
+                    <>
+                      <Shield className="w-5 h-5 mr-2" />
+                      Yönetici Girişi
+                    </>
+                  )}
                 </Button>
               </form>
             </CardContent>
