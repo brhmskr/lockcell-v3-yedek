@@ -81,8 +81,9 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
       <div className="w-full max-w-md space-y-8">
         <div className="text-center space-y-3">
           <div className="flex items-center justify-center mb-6">
-            <img src="" alt="Lockcell" className="h-14 object-contain dark:hidden" data-testid="img-logo-light" />
-            <img src="" alt="Lockcell" className="h-14 object-contain hidden dark:block" data-testid="img-logo-dark" />
+            {/* DÜZELTİLEN KISIM BURASI */}
+            <img src={lockcellLogoDark} alt="Lockcell" className="h-14 object-contain dark:hidden" data-testid="img-logo-light" />
+            <img src={lockcellLogoWhite} alt="Lockcell" className="h-14 object-contain hidden dark:block" data-testid="img-logo-dark" />
           </div>
           <h1 className="text-2xl font-bold tracking-tight" data-testid="text-app-title">
             MES Üretim Takip Sistemi
