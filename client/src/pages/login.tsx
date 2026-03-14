@@ -4,11 +4,28 @@ import { apiRequest } from "@/lib/queryClient";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { LogIn, Shield, Wrench, Lock, User as UserIcon, KeyRound, Settings2 } from "lucide-react";
-import lockcellLogoWhite from "@assets/lockcell-beyaz_1772012570656.webp";
-import lockcellLogoDark from "@assets/lockcell_logo_1772012546609.webp";
+import {
+  LogIn,
+  Shield,
+  Wrench,
+  Lock,
+  User as UserIcon,
+  KeyRound,
+  Settings2,
+} from "lucide-react";
+// Eski @assets yerine doğrudan klasör yolu (../assets)
+import lockcellLogoWhite from "../assets/lockcell-beyaz_1772012570656.webp";
+import lockcellLogoDark from "../assets/lockcell_logo_1772012546609.webp";
+// import lockcellLogoWhite from "@assets/lockcell-beyaz_1772012570656.webp";
+// import lockcellLogoDark from "@assets/lockcell_logo_1772012546609.webp";
 import type { User, Machine } from "@shared/schema";
 
 type SafeUser = Omit<User, "password">;
@@ -30,20 +47,29 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
     queryKey: ["/api/operators"],
   });
 
-  const { data: machines } = useQuery<Pick<Machine, "id" | "name" | "code" | "status">[]>({
+  const { data: machines } = useQuery<
+    Pick<Machine, "id" | "name" | "code" | "status">[]
+  >({
     queryKey: ["/api/machines-public"],
   });
 
   const adminLoginMutation = useMutation({
     mutationFn: async () => {
-      const res = await apiRequest("POST", "/api/auth/login", { username, password });
+      const res = await apiRequest("POST", "/api/auth/login", {
+        username,
+        password,
+      });
       return res.json();
     },
     onSuccess: (user: SafeUser) => {
       onLogin(user);
     },
     onError: (err: Error) => {
-      toast({ title: "Giriş Hatası", description: err.message, variant: "destructive" });
+      toast({
+        title: "Giriş Hatası",
+        description: err.message,
+        variant: "destructive",
+      });
     },
   });
 
@@ -60,7 +86,11 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
       onLogin(user, selectedMachineId ? Number(selectedMachineId) : undefined);
     },
     onError: (err: Error) => {
-      toast({ title: "Giriş Hatası", description: err.message, variant: "destructive" });
+      toast({
+        title: "Giriş Hatası",
+        description: err.message,
+        variant: "destructive",
+      });
     },
   });
 
@@ -82,10 +112,23 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
         <div className="text-center space-y-3">
           <div className="flex items-center justify-center mb-6">
             {/* DÜZELTİLEN KISIM BURASI */}
-            <img src={lockcellLogoDark} alt="Lockcell" className="h-14 object-contain dark:hidden" data-testid="img-logo-light" />
-            <img src={lockcellLogoWhite} alt="Lockcell" className="h-14 object-contain hidden dark:block" data-testid="img-logo-dark" />
+            <img
+              src={lockcellLogoDark}
+              alt="Lockcell"
+              className="h-14 object-contain dark:hidden"
+              data-testid="img-logo-light"
+            />
+            <img
+              src={lockcellLogoWhite}
+              alt="Lockcell"
+              className="h-14 object-contain hidden dark:block"
+              data-testid="img-logo-dark"
+            />
           </div>
-          <h1 className="text-2xl font-bold tracking-tight" data-testid="text-app-title">
+          <h1
+            className="text-2xl font-bold tracking-tight"
+            data-testid="text-app-title"
+          >
             MES Üretim Takip Sistemi
           </h1>
           <p className="text-muted-foreground text-sm">
@@ -131,16 +174,28 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
                     <Settings2 className="w-4 h-4" />
                     Tezgah Seçimi
                   </label>
-                  <Select value={selectedMachineId} onValueChange={setSelectedMachineId}>
-                    <SelectTrigger className="h-14 text-base" data-testid="select-machine">
+                  <Select
+                    value={selectedMachineId}
+                    onValueChange={setSelectedMachineId}
+                  >
+                    <SelectTrigger
+                      className="h-14 text-base"
+                      data-testid="select-machine"
+                    >
                       <SelectValue placeholder="Tezgah seçiniz..." />
                     </SelectTrigger>
                     <SelectContent>
                       {machines?.map((m) => (
-                        <SelectItem key={m.id} value={String(m.id)} data-testid={`option-machine-${m.id}`}>
+                        <SelectItem
+                          key={m.id}
+                          value={String(m.id)}
+                          data-testid={`option-machine-${m.id}`}
+                        >
                           <div className="flex items-center gap-2 py-1">
                             <Settings2 className="w-4 h-4 text-chart-1" />
-                            <span className="font-mono font-bold text-sm">{m.code}</span>
+                            <span className="font-mono font-bold text-sm">
+                              {m.code}
+                            </span>
                             <span className="text-muted-foreground">|</span>
                             <span className="text-base">{m.name}</span>
                           </div>
@@ -155,13 +210,23 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
                     <UserIcon className="w-4 h-4" />
                     Operatör İsmi
                   </label>
-                  <Select value={selectedUserId} onValueChange={setSelectedUserId}>
-                    <SelectTrigger className="h-14 text-base" data-testid="select-operator">
+                  <Select
+                    value={selectedUserId}
+                    onValueChange={setSelectedUserId}
+                  >
+                    <SelectTrigger
+                      className="h-14 text-base"
+                      data-testid="select-operator"
+                    >
                       <SelectValue placeholder="Operatör seçiniz..." />
                     </SelectTrigger>
                     <SelectContent>
                       {operators?.map((op) => (
-                        <SelectItem key={op.id} value={String(op.id)} data-testid={`option-operator-${op.id}`}>
+                        <SelectItem
+                          key={op.id}
+                          value={String(op.id)}
+                          data-testid={`option-operator-${op.id}`}
+                        >
                           <div className="flex items-center gap-2 py-1">
                             <Wrench className="w-4 h-4 text-chart-2" />
                             <span className="text-base">{op.fullName}</span>
@@ -192,7 +257,12 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
                 <Button
                   type="submit"
                   className="w-full h-14 text-lg font-bold"
-                  disabled={!selectedMachineId || !selectedUserId || !pin || operatorLoginMutation.isPending}
+                  disabled={
+                    !selectedMachineId ||
+                    !selectedUserId ||
+                    !pin ||
+                    operatorLoginMutation.isPending
+                  }
                   data-testid="button-operator-login"
                 >
                   {operatorLoginMutation.isPending ? (
@@ -248,7 +318,9 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
                 <Button
                   type="submit"
                   className="w-full h-14 text-lg font-bold"
-                  disabled={!username || !password || adminLoginMutation.isPending}
+                  disabled={
+                    !username || !password || adminLoginMutation.isPending
+                  }
                   data-testid="button-admin-login"
                 >
                   {adminLoginMutation.isPending ? (
